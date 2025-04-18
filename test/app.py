@@ -23,7 +23,7 @@ def allowed_file(filename):
 model_path = os.path.join(os.path.dirname(__file__), 'model', 'model_history.keras')
 model = tf.keras.models.load_model(model_path)
 
-# Nama kelas prediksi
+# Nama kelas hasil prediksi
 class_names = ['Normal', 'Glaukoma']
 
 # Membaca akurasi dari training_history.json
