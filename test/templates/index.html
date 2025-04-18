@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Foto Analyzer - Glaukoma</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#2E8B57",
+              secondary: "#A7E8BD",
+              accent: "#3E9E7E",
+              dark: "#0f1e1e",
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-dark text-secondary">
+    <!-- Header -->
+    <header
+      class="w-full border-b border-secondary/30 shadow-sm p-4 flex justify-between items-center bg-dark"
+    >
+      <div class="flex items-center gap-2">
+        <i class="fas fa-eye text-primary text-xl"></i>
+        <span class="font-semibold text-lg text-white">AI Foto Analyzer</span>
+      </div>
+      <span class="text-sm text-secondary">Deteksi Glaukoma</span>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="text-center py-16 bg-dark">
+      <h1 class="text-3xl font-bold text-white mb-4">
+        Deteksi Dini Glaukoma dengan AI
+      </h1>
+      <p class="text-secondary max-w-xl mx-auto">
+        Unggah foto mata Anda dan biarkan AI kami menganalisis kemungkinan
+        tanda-tanda glaukoma secara instan dan akurat.
+      </p>
+
+      <!-- Upload Form -->
+      <form
+        action="{{ url_for('predict') }}"
+        method="post"
+        enctype="multipart/form-data"
+        class="mt-6 flex flex-col items-center"
+      >
+        <input
+          type="file"
+          name="file"
+          id="file-input"
+          accept="image/*"
+          required
+          class="block mb-4 text-sm text-secondary"
+          onchange="previewImage(event)"
+        />
+        <button
+          type="submit"
+          class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-accent hover:text-dark transition"
+        >
+          <i class="fas fa-cloud-upload-alt mr-2"></i> Unggah & Analisa
+        </button>
+      </form>
+    </section>
+
+    <!-- Preview & Hasil -->
+    <section class="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto px-4 py-12">
+      <div class="border border-secondary/30 rounded-xl p-6 shadow-md bg-dark">
+        <h2 class="text-xl font-semibold mb-4 text-white">Pratinjau Foto</h2>
+        <img
+          id="preview"
+          class="w-full rounded-lg border {% if not image_path %}hidden{% endif %}"
+          src="{{ image_path if image_path else '' }}"
+        />
+      </div>
+      <div class="border border-secondary/30 rounded-xl p-6 shadow-md bg-dark">
+        <h2 class="text-xl font-semibold mb-4 text-white">Hasil Analisis</h2>
+        {% if prediction %}
+        <p class="text-secondary">
+          <strong>Prediksi:</strong> {{ prediction }} <br />
+          <strong>Keyakinan:</strong> {{ confidence }}
+        </p>
+        {% else %}
+        <p id="result-text" class="text-secondary">
+          Hasil analisis akan muncul di sini...
+        </p>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Galeri Foto Glaukoma -->
+    <section class="py-12 bg-dark">
+      <h2 class="text-2xl font-semibold text-center mb-8 text-white">
+        Contoh Foto Glaukoma
+      </h2>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto px-4"
+      >
+        <div
+          class="border border-secondary/30 rounded-xl overflow-hidden shadow bg-dark"
+        >
+          <img
+            src="https://www.inmedpharma.com/wp-content/uploads/2020/05/Glaucoma-compared-to-normal-vision.png"
+            alt="Mata dengan Glaukoma 1"
+            class="w-full h-48 object-cover"
+          />
+          <p class="p-4 text-sm text-center text-secondary">
+            Mata dengan glaukoma tahap awal
+          </p>
+        </div>
+        <div
+          class="border border-secondary/30 rounded-xl overflow-hidden shadow bg-dark"
+        >
+          <img
+            src="https://news.unair.ac.id/wp-content/uploads/2020/11/Glaukoma.jpg"
+            alt="Mata dengan Glaukoma 2"
+            class="w-full h-48 object-cover"
+          />
+          <p class="p-4 text-sm text-center text-secondary">
+            Kerusakan saraf optik akibat glaukoma
+          </p>
+        </div>
+        <div
+          class="border border-secondary/30 rounded-xl overflow-hidden shadow bg-dark"
+        >
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiv5sqefixrCTFDbEzjYqHGOVk4qsnnTVlXQ&s"
+            alt="Mata dengan Glaukoma 3"
+            class="w-full h-48 object-cover"
+          />
+          <p class="p-4 text-sm text-center text-secondary">
+            Perbandingan saraf sehat vs saraf rusak
+          </p>
+        </div>
+      </div>
+      <p class="mt-8 text-center max-w-3xl mx-auto text-secondary px-4">
+        Glaukoma adalah sekelompok penyakit mata yang merusak saraf optik dan
+        dapat menyebabkan kehilangan penglihatan secara permanen jika tidak
+        dideteksi dan diobati sejak dini.
+      </p>
+    </section>
+
+    <!-- Ilustrasi AI & Info Model -->
+    <section class="py-12 px-4 max-w-4xl mx-auto">
+      <div class="flex flex-col items-center">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/4712/4712325.png"
+          alt="Icon AI Analyze"
+          class="w-20 mb-4"
+        />
+        <div class="text-center text-secondary">
+          <h3 class="text-lg font-semibold mb-2 text-white">
+            Model & Evaluasi
+          </h3>
+          <p>
+            Model:
+            <span class="font-medium">CNN (Convolutional Neural Network)</span>
+          </p>
+          <p>Akurasi: <span class="font-medium">{{ model_accuracy }}</span></p>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      function previewImage(event) {
+        const preview = document.getElementById("preview");
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.classList.remove("hidden");
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    </script>
+  </body>
+</html>

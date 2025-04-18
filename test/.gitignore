@@ -1,0 +1,20 @@
+# Ignore Python virtual environments
+venv/
+Lib/
+Include/
+Scripts/
+
+# Ignore __pycache__ and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.dll
+
+# Ignore temporary files
+*.log
+*.tmp
+*.swp
+
+# Tensorflow internal
+tensorflow/
